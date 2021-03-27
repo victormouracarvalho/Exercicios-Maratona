@@ -5,10 +5,13 @@ using namespace std;
 
 int main () 
 {
-   int n,t,i;
+   int cont = 1;
+   while(true){
+       int n,t,i;
    vector <pair<int,int>> sorvete;
    pair <int, int> tmp;
    cin >> n >> t;
+   if(n==0 and t==0 ) break;
     
    for(i=0;i<t;i++){
        cin >> tmp.first >> tmp.second;
@@ -43,9 +46,12 @@ int main ()
          }
          
     }
-
+    cout << "Teste " << cont << endl;
+    cont++;
    for(i=0;i<(sorvete.size());i++){
         cout << sorvete[i].first << ' ' << sorvete[i].second << endl;
+   }
+   
    }
     
     return 0;
