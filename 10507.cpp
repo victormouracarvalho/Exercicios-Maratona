@@ -1,15 +1,44 @@
-#include <cstdio>
+#include <iostream>
 #include <vector>
+#include <set>
 using namespace std;
 
-typedef vector<int> vi;
+int Find(int G[], int x)
+{
+    while (G[x] != x)
+    {
+        G[x] = G[G[x]]; //path compression
+        x = G[x];
+    }
+    return x;
+}
 
-// Union-Find Disjoint Sets Library written in OOP manner, using both path compression and union by rank heuristics
+int Union(int G[], int size[], int a, int b)
+{
+    int A = Find(G, a); //set of a
+    int B = Find(G, b); //set of b
+    if (A == B)
+        return 0;
+    if (size[A] < size[B])
+    { //smallest points to the bigger
+
+        size[B] += size[A]; //update size
+        G[A] = B;
+        return B;
+    }
+    else
+    {
+        size[A] += size[B];
+        G[B] = A;
+        return A;
+    }
+}
+
+
 class UnionFind {                                              // OOP style
-private:
-  vi p, rank, setSize;                       // remember: vi is vector<int>
-  int numSets;
 public:
+  vector<int> p, rank, setSize;                       // remember: vi is vector<int>
+  int numSets;
   UnionFind(int N) {
     setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
     p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
@@ -26,23 +55,34 @@ public:
   int sizeOfSet(int i) { return setSize[findSet(i)]; }
 };
 
-int main() {
-  printf("Assume that there are 5 disjoint sets initially\n");
-  UnionFind UF(5); // create 5 disjoint sets
-  printf("%d\n", UF.numDisjointSets()); // 5
-  UF.unionSet(0, 1);
-  printf("%d\n", UF.numDisjointSets()); // 4
-  UF.unionSet(2, 3);
-  printf("%d\n", UF.numDisjointSets()); // 3
-  UF.unionSet(4, 3);
-  printf("%d\n", UF.numDisjointSets()); // 2
-  printf("isSameSet(0, 3) = %d\n", UF.isSameSet(0, 3)); // will return 0 (false)
-  printf("isSameSet(4, 3) = %d\n", UF.isSameSet(4, 3)); // will return 1 (true)
-  for (int i = 0; i < 5; i++) // findSet will return 1 for {0, 1} and 3 for {2, 3, 4}
-    printf("findSet(%d) = %d, sizeOfSet(%d) = %d\n", i, UF.findSet(i), i, UF.sizeOfSet(i));
-  UF.unionSet(0, 3);
-  printf("%d\n", UF.numDisjointSets()); // 1
-  for (int i = 0; i < 5; i++) // findSet will return 3 for {0, 1, 2, 3, 4}
-    printf("findSet(%d) = %d, sizeOfSet(%d) = %d\n", i, UF.findSet(i), i, UF.sizeOfSet(i));
+
+
+
+
+int main () {
+    int n, m;
+    while(cin >> n >> m){
+        UnionFind UF(26);
+        string str;
+        getline(cin, str);
+        getline(cin, str);
+        cout << str << endl;
+       
+        for(int i=0;i<26;i++) cout << UF.rank[i] << " ";
+        cout << endl;
+
+        for(int i=0;i<m;i++){
+            cin >> str;
+            int first = str[0]-'A';
+            int second = str[1]-'A';
+            UF.unionSet(first,second);
+        }
+        for(int i=0;i<26;i++) cout << UF.rank[i] << " ";
+        cout << endl;
+        for (int i = 0; i < 26; i++) // findSet will return 1 for {0, 1} and 3 for {2, 3, 4}
+            printf("findSet(%d) = %d, sizeOfSet(%d) = %d\n", i, UF.findSet(i), i, UF.sizeOfSet(i));
+    }
+
   return 0;
 }
+

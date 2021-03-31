@@ -36,7 +36,7 @@ int main () {
 
 
         int i=0, j=n-1;
-        int rangel=0, gugu=0;
+        long long int rangel=0, gugu=0;
         while(i<=j){
             if(rangel<gugu){
                 rangel+=lista[i];
@@ -47,7 +47,7 @@ int main () {
                 j--;
             }
         }
-        int x = rangel - gugu;
+        long long int x = rangel - gugu;
         if(x<0) x = -x;
         cout << x << endl;
 
