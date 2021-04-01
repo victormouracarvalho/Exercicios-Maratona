@@ -1,86 +1,84 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <set>
 using namespace std;
-
-int Find(int G[], int x)
-{
-    while (G[x] != x)
-    {
-        G[x] = G[G[x]]; //path compression
-        x = G[x];
-    }
-    return x;
-}
-
-int Union(int G[], int size[], int a, int b)
-{
-    int A = Find(G, a); //set of a
-    int B = Find(G, b); //set of b
-    if (A == B)
-        return 0;
-    if (size[A] < size[B])
-    { //smallest points to the bigger
-
-        size[B] += size[A]; //update size
-        G[A] = B;
-        return B;
-    }
-    else
-    {
-        size[A] += size[B];
-        G[B] = A;
-        return A;
-    }
-}
-
-
-class UnionFind {                                              // OOP style
-public:
-  vector<int> p, rank, setSize;                       // remember: vi is vector<int>
-  int numSets;
-  UnionFind(int N) {
-    setSize.assign(N, 1); numSets = N; rank.assign(N, 0);
-    p.assign(N, 0); for (int i = 0; i < N; i++) p[i] = i; }
-  int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
-  bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
-  void unionSet(int i, int j) { 
-    if (!isSameSet(i, j)) { numSets--; 
-    int x = findSet(i), y = findSet(j);
-    // rank is used to keep the tree short
-    if (rank[x] > rank[y]) { p[y] = x; setSize[x] += setSize[y]; }
-    else                   { p[x] = y; setSize[y] += setSize[x];
-                             if (rank[x] == rank[y]) rank[y]++; } } }
-  int numDisjointSets() { return numSets; }
-  int sizeOfSet(int i) { return setSize[findSet(i)]; }
-};
-
-
-
-
 
 int main () {
     int n, m;
     while(cin >> n >> m){
-        UnionFind UF(26);
         string str;
-        getline(cin, str);
-        getline(cin, str);
-        cout << str << endl;
-       
-        for(int i=0;i<26;i++) cout << UF.rank[i] << " ";
-        cout << endl;
+        queue<int> fila;
+        set<int> conferidor;
+        cin >> str;
+        fila.push(str[0]-'A'); fila.push(str[1]-'A'); fila.push(str[2]-'A');
+        conferidor.insert(str[0]-'A'); conferidor.insert(str[1]-'A'); conferidor.insert(str[2]-'A');
 
-        for(int i=0;i<m;i++){
+        // cout << str << endl;
+        vector<int> G[27];
+        vector<int> ligado;
+        ligado.assign(27,0);
+        ligado[str[0]-'A'] =1; ligado[str[1]-'A'] =1; ligado[str[2]-'A'] =1; 
+        vector<int> connection;
+        connection.assign(27,0);
+        connection[str[0]-'A'] =3; connection[str[1]-'A'] =3; connection[str[2]-'A'] =3; 
+        vector<int> tempo;
+        tempo.assign(27,0); 
+
+        for(int i = 0; i < m; i++) {
             cin >> str;
-            int first = str[0]-'A';
-            int second = str[1]-'A';
-            UF.unionSet(first,second);
+            int a = str[0]-'A', b = str[1]-'A';
+            G[a].push_back(b);
+            G[b].push_back(a);
+            conferidor.insert(a);
+            conferidor.insert(b);
         }
-        for(int i=0;i<26;i++) cout << UF.rank[i] << " ";
-        cout << endl;
-        for (int i = 0; i < 26; i++) // findSet will return 1 for {0, 1} and 3 for {2, 3, 4}
-            printf("findSet(%d) = %d, sizeOfSet(%d) = %d\n", i, UF.findSet(i), i, UF.sizeOfSet(i));
+        int acc=3;
+        while(!fila.empty()){
+            int a = fila.front(); fila.pop();
+            // cout << "Pilha : " << a << endl; 
+            if(ligado[a]){
+                for(int i: G[a]){
+                    // cout << i << " ";
+                    if(!ligado[i]) connection[i]++;
+                    if(connection[i]>=3 and (!ligado[i])){
+                        fila.push(i);
+                        ligado[i]=1;
+                        acc++;
+                        tempo[i]=tempo[a]+1;
+                     }   
+                }
+            }
+            // cout << endl;
+        }
+        // for(int i =0;i<26; i++) cout << tempo[i] << " ";
+        // cout << endl;
+        // for(int i =0;i<26; i++) cout << ligado[i] << " ";
+        // cout << endl;
+        // for(int i =0;i<26; i++) cout << connection[i] << " ";
+        // cout << endl;
+        // cout << "Acc = " << acc << endl;
+        bool vero=true;
+        int maior = 0;
+
+        for(auto it: conferidor){
+            if(!ligado[it]) {
+                vero = false;
+                break;
+            }
+            else{
+                if(tempo[it]>maior) maior = tempo[it];
+            } 
+        }
+
+        if(acc<n) {
+            cout << "THIS BRAIN NEVER WAKES UP\n";
+        }
+        else{
+            cout << "WAKE UP IN, " << maior << ", YEARS\n";
+        } 
+
+       
     }
 
   return 0;
