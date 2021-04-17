@@ -16,6 +16,8 @@ int main () {
             istringstream input(line);
             string word;
             vector<int> output;
+
+          
             while(input >> word){
                 int j = stoi(word);
                 // cout << j << " ";
